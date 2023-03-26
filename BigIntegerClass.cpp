@@ -55,7 +55,7 @@ BigInt::BigInt(const int& x) : capacity(x), size(0) {
 
 BigInt::BigInt(const char* x, int size) :capacity(size) {
 	this->size = Lenght(x);
-	if (this->size > capacity) capacity = this->size + 1;
+	if (this->size > capacity) capacity = this->size;
 	number = new int[capacity];
 	for (int i = 0; i < capacity - this->size; ++i) {
 		number[i] = 0;
@@ -70,7 +70,7 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 	size = x.size;
 	if (x.capacity > capacity)capacity = x.capacity;
 	number = new int[capacity];
-	for (int i = 0; i < capacity; ++i) {
+	for (int i = 0; i < capacity-size; ++i) {
 		number[i] = 0;
 	}
 	for (int i = 0; i <= x.size; ++i) {
@@ -80,14 +80,14 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 }
 
 BigInt& BigInt::operator=(BigInt x) {	//присваивание
-	if (capacity >= x.capacity) {
-		for (int i = 0; i < capacity; ++i) {
+	if (capacity > x.capacity) {
+		size = x.size;
+		for (int i = 0; i < capacity-size; ++i) {
 			number[i] = 0;
 		}
 		for (int i = 0; i <= x.size; ++i) {
 			number[capacity - i] = x.number[x.capacity - i];
 		}
-		size = x.size;
 	}
 	else {
 		swap(x);
