@@ -21,17 +21,30 @@ class BigInt {
 		return i;
 	}
 public:
+	BigInt() = default;
 	BigInt(const char* x);
 	BigInt(const int& x);
 	BigInt(const char* x, int size);
 	BigInt(const BigInt& x);
 	BigInt& operator=(BigInt x);
 	void printNumber();
-	BigInt& operator+= (BigInt& x) {
-		if (size < x.size) {
-
+	BigInt& operator+= (const BigInt& x) {
+		BigInt newInt;
+		if (x.capacity > capacity) {
+			newInt = BigInt(x.capacity + 1);
 		}
-		number[size - 1] += x.number[x.size - 1];
+		else if (size == capacity) {
+			newInt = BigInt(capacity + 1);
+		}
+		newInt = *this;
+		for (int i = 0; i < x.size; ++i) {
+			newInt.number[newInt.capacity - i - 1] += x.number[x.capacity - i - 1];
+			if (newInt.number[newInt.capacity - i - 1] >= 10) {
+				newInt.number[newInt.capacity - i - 1] = newInt.number[newInt.capacity - i - 1] % 10;
+				newInt.number[newInt.capacity - i - 2] += 1;
+			}
+		}
+		swap(newInt);
 		return *this;
 	}
 
@@ -70,11 +83,11 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 	size = x.size;
 	if (x.capacity > capacity)capacity = x.capacity;
 	number = new int[capacity];
-	for (int i = 0; i < capacity-size; ++i) {
+	for (int i = 0; i < capacity - size; ++i) {
 		number[i] = 0;
 	}
 	for (int i = 0; i <= x.size; ++i) {
-		number[capacity - i] = x.number[x.capacity - i];
+		number[capacity - i -1] = x.number[x.capacity - i -1];
 	}
 	std::cout << "copy!\n";
 }
@@ -82,7 +95,7 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 BigInt& BigInt::operator=(BigInt x) {	//присваивание
 	if (capacity > x.capacity) {
 		size = x.size;
-		for (int i = 0; i < capacity-size; ++i) {
+		for (int i = 0; i < capacity - size; ++i) {
 			number[i] = 0;
 		}
 		for (int i = 0; i <= x.size; ++i) {
@@ -96,6 +109,12 @@ BigInt& BigInt::operator=(BigInt x) {	//присваивание
 	return *this;
 }
 
+BigInt operator+(const BigInt& x, const BigInt& y) {
+	BigInt sum = x;
+	sum += y;
+	return sum;
+}
+
 void BigInt::printNumber() {
 	for (int i = 0; i < capacity; ++i) {
 		std::cout << number[i];
@@ -107,14 +126,23 @@ int main()
 {
 
 	BigInt bg("123456", 10);
+	std::cout << "bg1: ";
 	bg.printNumber();
-	BigInt bg2("123");
+	BigInt bg2("555");
+	std::cout << "bg2: ";
 	bg2.printNumber();
 	BigInt bg3(5);
+	std::cout << "bg3: ";
 	bg3.printNumber();
-	bg3 = "348556734985";
-	bg3.printNumber();
-	bg3 = bg;
-	bg3.printNumber();
-
+	BigInt bg4("222");
+	bg2 += bg4;	//123+328
+	std::cout << "bg2: ";
+	bg2.printNumber();
+	bg2 = bg2 + bg;
+	bg2.printNumber();
 }
+
+//bg3 = "348556734985";
+//bg3.printNumber();
+//bg3 = bg;
+//bg3.printNumber();
