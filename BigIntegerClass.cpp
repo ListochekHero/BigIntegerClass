@@ -56,15 +56,11 @@ public:
 			int count = i;
 			while (newInt.number[newInt.capacity - count - 1] >= 10)
 			{
-				
-					newInt.number[newInt.capacity - count - 1] = newInt.number[newInt.capacity - count - 1] % 10;
-					newInt.number[newInt.capacity - count - 2] += 1;
-				
+				newInt.number[newInt.capacity - count - 1] = newInt.number[newInt.capacity - count - 1] % 10;
+				newInt.number[newInt.capacity - count - 2] += 1;
 				count++;
 			}
-			
 		}
-		
 		if (newInt.number[0] == 0) {
 			newInt.reduce_by_one();
 		}
@@ -74,7 +70,6 @@ public:
 		swap(newInt);
 		return *this;
 	}
-
 };
 
 BigInt::BigInt(const char* x)
