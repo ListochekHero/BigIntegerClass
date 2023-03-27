@@ -20,6 +20,17 @@ class BigInt {
 		}
 		return i;
 	}
+
+	void reduce_by_one() {
+		int* old = number;
+		capacity -= 1;
+		number = new int[capacity];
+		for (int i = 0; i < capacity; ++i) {
+			number[capacity - i - 1] = old[capacity - i];
+		}
+		delete[] old;
+	}
+
 public:
 	BigInt() = default;
 	BigInt(const char* x);
@@ -37,15 +48,28 @@ public:
 			newInt = BigInt(capacity + 1);
 		}
 		newInt = *this;
-		for (int i = 0; i < x.size; ++i) {
-			newInt.number[newInt.capacity - i - 1] += x.number[x.capacity - i - 1];
-			if (newInt.number[newInt.capacity - i - 1] >= 10) {
-				newInt.number[newInt.capacity - i - 1] = newInt.number[newInt.capacity - i - 1] % 10;
-				newInt.number[newInt.capacity - i - 2] += 1;
-			}
-		}
 		if (x.size > size) {
 			newInt.size = x.size;
+		}
+		for (int i = 0; i < x.size; ++i) {
+			newInt.number[newInt.capacity - i - 1] += x.number[x.capacity - i - 1];
+			int count = i;
+			while (newInt.number[newInt.capacity - count - 1] >= 10)
+			{
+				
+					newInt.number[newInt.capacity - count - 1] = newInt.number[newInt.capacity - count - 1] % 10;
+					newInt.number[newInt.capacity - count - 2] += 1;
+				
+				count++;
+			}
+			
+		}
+		
+		if (newInt.number[0] == 0) {
+			newInt.reduce_by_one();
+		}
+		else {
+			newInt.size++;
 		}
 		swap(newInt);
 		return *this;
@@ -90,7 +114,7 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 		number[i] = 0;
 	}
 	for (int i = 0; i < x.size; ++i) {
-		number[capacity - i -1] = x.number[x.capacity - i -1];
+		number[capacity - i - 1] = x.number[x.capacity - i - 1];
 	}
 	std::cout << "copy!\n";
 }
@@ -128,16 +152,16 @@ void BigInt::printNumber() {
 int main()
 {
 
-	BigInt bg("111111", 10);
+	BigInt bg("1");
 	std::cout << "bg1: ";
 	bg.printNumber();
-	BigInt bg2("555");
+	BigInt bg2("555555");
 	std::cout << "bg2: ";
 	bg2.printNumber();
 	BigInt bg3(5);
 	std::cout << "bg3: ";
 	bg3.printNumber();
-	BigInt bg4("222");
+	BigInt bg4("444444");
 	bg2 += bg4;	//123+328
 	std::cout << "bg2: ";
 	bg2.printNumber();
