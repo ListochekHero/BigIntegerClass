@@ -44,6 +44,9 @@ public:
 				newInt.number[newInt.capacity - i - 2] += 1;
 			}
 		}
+		if (x.size > size) {
+			newInt.size = x.size;
+		}
 		swap(newInt);
 		return *this;
 	}
@@ -86,7 +89,7 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 	for (int i = 0; i < capacity - size; ++i) {
 		number[i] = 0;
 	}
-	for (int i = 0; i <= x.size; ++i) {
+	for (int i = 0; i < x.size; ++i) {
 		number[capacity - i -1] = x.number[x.capacity - i -1];
 	}
 	std::cout << "copy!\n";
@@ -125,7 +128,7 @@ void BigInt::printNumber() {
 int main()
 {
 
-	BigInt bg("123456", 10);
+	BigInt bg("111111", 10);
 	std::cout << "bg1: ";
 	bg.printNumber();
 	BigInt bg2("555");
