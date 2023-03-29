@@ -2,6 +2,7 @@
 #include <iostream>
 
 class BigInt {
+	bool negative = false;
 	int* number = nullptr;
 	int size = 0;
 	int capacity = 0;
@@ -10,6 +11,7 @@ class BigInt {
 		std::swap(number, x.number);
 		std::swap(size, x.size);
 		std::swap(capacity, x.capacity);
+		std::swap(negative, x.negative);
 	}
 
 	int Lenght(const char* x) {
@@ -40,6 +42,7 @@ public:
 	BigInt& operator=(BigInt x);
 	void printNumber();
 	friend bool operator< (const BigInt& x, const BigInt& y);
+	friend bool operator> (const BigInt& x, const BigInt& y);
 	friend bool operator== (const BigInt& x, const BigInt& y);
 	BigInt& operator+= (const BigInt& x) {
 		BigInt newInt;
@@ -72,6 +75,26 @@ public:
 		swap(newInt);
 		return *this;
 	}
+
+	BigInt& operator-= (const BigInt& x) {
+		/*if (x > *this) {
+		}*/
+		for (size_t i = 0; i < x.size; ++i)
+		{
+			if (number[capacity - x.size + i] - x.number[x.capacity - x.size + i] < 0) {
+				number[capacity - x.size + i] += 10;
+				number[capacity - x.size + i - 1]--;
+			}
+			number[capacity - x.size + i] -= x.number[x.capacity - x.size + i];
+			int count = i;
+			while (number[capacity - x.size - count - 1] < 0) {
+				number[capacity - x.size - count - 1] += 10;
+				number[capacity - x.size - count - 2]--;
+				count++;
+			}
+		}
+		return *this;
+	}
 };
 
 BigInt::BigInt(const char* x)
@@ -83,7 +106,7 @@ BigInt::BigInt(const char* x)
 	}
 }
 
-BigInt::BigInt(const int& x) : capacity(x), size(0) {
+BigInt::BigInt(const int& x) : capacity(x), size(0), negative(false) {
 	number = new int[capacity];
 	for (int i = 0; i < capacity; ++i) {
 		number[i] = 0;
@@ -166,7 +189,7 @@ bool operator== (const BigInt& x, const BigInt& y) {
 }
 
 bool operator<= (const BigInt& x, const BigInt& y) {
-	return (x < y) || (x==y);
+	return (x < y) || (x == y);
 }
 
 bool operator>= (const BigInt& x, const BigInt& y) {
@@ -182,8 +205,9 @@ void BigInt::printNumber() {
 
 int main()
 {
-	BigInt bg1 = "9999";
-	BigInt bg2 = "9998";
-	std::cout << (bg1 >= bg2);
+	BigInt bg1 = "100097";
+	BigInt bg2 = "98";
+	bg1 -= bg2;
+	bg1.printNumber();
 
 }
