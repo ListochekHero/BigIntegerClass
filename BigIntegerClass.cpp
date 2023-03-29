@@ -81,15 +81,15 @@ public:
 		}*/
 		for (size_t i = 0; i < x.size; ++i)
 		{
-			if (number[capacity - x.size + i] - x.number[x.capacity - x.size + i] < 0) {
-				number[capacity - x.size + i] += 10;
-				number[capacity - x.size + i - 1]--;
+			if (number[capacity - i - 1] - x.number[x.capacity - i - 1] < 0) {
+				number[capacity - i - 1] += 10;
+				number[capacity - i - 2]--;
 			}
-			number[capacity - x.size + i] -= x.number[x.capacity - x.size + i];
+			number[capacity - i - 1] -= x.number[x.capacity - i - 1];
 			int count = i;
-			while (number[capacity - x.size - count - 1] < 0) {
-				number[capacity - x.size - count - 1] += 10;
-				number[capacity - x.size - count - 2]--;
+			while (number[capacity - count - 2] < 0) {
+				number[capacity - count - 2] += 10;
+				number[capacity  - count - 3]--;
 				count++;
 			}
 		}
@@ -205,7 +205,7 @@ void BigInt::printNumber() {
 
 int main()
 {
-	BigInt bg1 = "100097";
+	BigInt bg1 = "10007";
 	BigInt bg2 = "98";
 	bg1 -= bg2;
 	bg1.printNumber();
