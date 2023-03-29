@@ -39,6 +39,8 @@ public:
 	BigInt(const BigInt& x);
 	BigInt& operator=(BigInt x);
 	void printNumber();
+	friend bool operator< (const BigInt& x, const BigInt& y);
+	friend bool operator== (const BigInt& x, const BigInt& y);
 	BigInt& operator+= (const BigInt& x) {
 		BigInt newInt;
 		if (x.capacity > capacity) {
@@ -137,6 +139,40 @@ BigInt operator+(const BigInt& x, const BigInt& y) {
 	return sum;
 }
 
+bool operator< (const BigInt& x, const BigInt& y) {
+	if (x.size < y.size) return true;
+	else if (x.size > y.size) return false;
+	else {
+		for (int i = x.capacity - x.size; i < x.capacity; ++i) {
+			if (x.number[i] > y.number[i]) return false;
+			if (x.number[i] < y.number[i]) return true;
+		}
+		return false;
+	}
+}
+
+bool operator> (const BigInt& x, const BigInt& y) {
+	return y < x;
+}
+
+bool operator== (const BigInt& x, const BigInt& y) {
+	if (x.size == y.size) {
+		for (int i = x.capacity - x.size; i < x.capacity; ++i) {
+			if (x.number[i] != y.number[i]) return false;
+		}
+		return true;
+	}
+	else return false;
+}
+
+bool operator<= (const BigInt& x, const BigInt& y) {
+	return (x < y) || (x==y);
+}
+
+bool operator>= (const BigInt& x, const BigInt& y) {
+	return (x > y) || (x == y);
+}
+
 void BigInt::printNumber() {
 	for (int i = 0; i < capacity; ++i) {
 		std::cout << number[i];
@@ -146,25 +182,8 @@ void BigInt::printNumber() {
 
 int main()
 {
+	BigInt bg1 = "9999";
+	BigInt bg2 = "9998";
+	std::cout << (bg1 >= bg2);
 
-	BigInt bg("1");
-	std::cout << "bg1: ";
-	bg.printNumber();
-	BigInt bg2("555555");
-	std::cout << "bg2: ";
-	bg2.printNumber();
-	BigInt bg3(5);
-	std::cout << "bg3: ";
-	bg3.printNumber();
-	BigInt bg4("444444");
-	bg2 += bg4;	//123+328
-	std::cout << "bg2: ";
-	bg2.printNumber();
-	bg2 = bg2 + bg;
-	bg2.printNumber();
 }
-
-//bg3 = "348556734985";
-//bg3.printNumber();
-//bg3 = bg;
-//bg3.printNumber();
