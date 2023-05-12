@@ -32,6 +32,17 @@ class BigInt {
 		delete[] old;
 	}
 
+	void increase_by_one() {
+		int* old = number;
+		capacity += 1;
+		number = new int[capacity];
+		number[0] = 0;
+		for (size_t i = 0; i < capacity-1; ++i) {
+			number[capacity - i-1] = old[capacity - i - 2];
+		}
+		delete[] old;	
+	}
+
 public:
 	BigInt() = default;
 	BigInt(const char* x);
@@ -43,43 +54,33 @@ public:
 	friend bool operator< (const BigInt& x, const BigInt& y);
 	friend bool operator> (const BigInt& x, const BigInt& y);
 	friend bool operator== (const BigInt& x, const BigInt& y);
-	BigInt& operator+= (const BigInt& x) {
-		BigInt newInt;
+	BigInt& operator+= (BigInt x) {
 		if (x.capacity > capacity) {
-			newInt = BigInt(x.capacity + 1);
-		}
-		else if (size == capacity) {
-			newInt = BigInt(capacity + 1);
-		}
-		newInt = *this;
-		if (x.size > size) {
-			newInt.size = x.size;
+			swap(x);
 		}
 		for (size_t i = 0; i < x.size; ++i) {
-			newInt.number[newInt.capacity - i - 1] += x.number[x.capacity - i - 1];
+			number[capacity - i - 1] += x.number[x.capacity - i - 1];
 			size_t count = i;
-			while (newInt.number[newInt.capacity - count - 1] >= 10)
+			while (number[capacity - count - 1] >= 10)
 			{
-				newInt.number[newInt.capacity - count - 1] = newInt.number[newInt.capacity - count - 1] % 10;
-				newInt.number[newInt.capacity - count - 2] += 1;
+				number[capacity - count - 1] = number[capacity - count - 1] % 10;
+				if (((int)(capacity - count) - 2) < 0) {
+					increase_by_one();
+					number[capacity - count - 2] += 1;
+					return *this;
+				}
+				number[capacity - count - 2] += 1;
 				count++;
 			}
 		}
-		if (newInt.number[0] == 0) {
-			newInt.reduce_by_one();
-		}
-		else {
-			newInt.size++;
-		}
-		swap(newInt);
 		return *this;
 	}
 
 	BigInt& operator-= (const BigInt& x) {
-		if (x > *this) {
+		/*if (x > *this) {
 			BigInt newInt(x);
 			swap(newInt);
-		}
+		}*/
 		for (size_t i = 0; i < x.size; ++i)
 		{
 			if (number[capacity - i - 1] - x.number[x.capacity - i - 1] < 0) {
@@ -206,10 +207,9 @@ void BigInt::printNumber() {
 
 int main()
 {
-	BigInt bg1 = "999";
-	BigInt bg2 = "1007";
-	std::cout << (bg2 > bg1)<<"\n";
-	bg1 -= bg2;
+	BigInt bg1 = "7";
+	BigInt bg2 = "998";
+	bg1 += bg2;
 	bg1.printNumber();
 
 }
