@@ -1,10 +1,10 @@
 ﻿#include <iostream>
 
 class BigInt {
-	bool negative = false;
-	size_t size = 0;
-	size_t capacity = 0;
-	int* number = nullptr;
+	bool negative{ false };
+	size_t size{ 0 };
+	size_t capacity{ 0 };
+	int* number{ nullptr };
 
 	void swap(BigInt& x) {
 		std::swap(number, x.number);
@@ -14,7 +14,7 @@ class BigInt {
 	}
 
 	size_t Lenght(const char* x) {
-		size_t i = 0;
+		size_t i{ 0 };
 		while (x[i] != ('\0'))
 		{
 			++i;
@@ -26,7 +26,7 @@ class BigInt {
 		int* old = number;
 		capacity -= 1;
 		number = new int[capacity];
-		for (size_t i = 0; i < capacity; ++i) {
+		for (size_t i{ 0 }; i < capacity; ++i) {
 			number[capacity - i - 1] = old[capacity - i];
 		}
 		delete[] old;
@@ -37,10 +37,10 @@ class BigInt {
 		capacity += 1;
 		number = new int[capacity];
 		number[0] = 0;
-		for (size_t i = 0; i < capacity-1; ++i) {
-			number[capacity - i-1] = old[capacity - i - 2];
+		for (size_t i{ 0 }; i < capacity - 1; ++i) {
+			number[capacity - i - 1] = old[capacity - i - 2];
 		}
-		delete[] old;	
+		delete[] old;
 	}
 
 public:
@@ -58,9 +58,9 @@ public:
 		if (x.capacity > capacity) {
 			swap(x);
 		}
-		for (size_t i = 0; i < x.size; ++i) {
+		for (size_t i{ 0 }; i < x.size; ++i) {
 			number[capacity - i - 1] += x.number[x.capacity - i - 1];
-			size_t count = i;
+			size_t count{ i };
 			while (number[capacity - count - 1] >= 10)
 			{
 				number[capacity - count - 1] = number[capacity - count - 1] % 10;
@@ -76,11 +76,13 @@ public:
 		return *this;
 	}
 
-	BigInt& operator-= (const BigInt& x) {
-		/*if (x > *this) {
-			BigInt newInt(x);
-			swap(newInt);
-		}*/
+	BigInt& operator-= (BigInt x) {
+		if (negative == false && x.negative == true)return *this += x;
+		if (negative == true && x.negative == false)return *this += x;
+		if (x > *this) {
+			swap(x);
+			negative = !negative;
+		}
 		for (size_t i = 0; i < x.size; ++i)
 		{
 			if (number[capacity - i - 1] - x.number[x.capacity - i - 1] < 0) {
@@ -199,6 +201,7 @@ bool operator>= (const BigInt& x, const BigInt& y) {
 }
 
 void BigInt::printNumber() {
+	if (negative)std::cout << "-";
 	for (size_t i = 0; i < capacity; ++i) {
 		std::cout << number[i];
 	}
@@ -207,9 +210,10 @@ void BigInt::printNumber() {
 
 int main()
 {
-	BigInt bg1 = "7";
+	BigInt bg1 = "7000";
 	BigInt bg2 = "998";
-	bg1 += bg2;
+	bg1 -= bg2;
 	bg1.printNumber();
+
 
 }
