@@ -14,6 +14,7 @@ class BigInt {
 	}
 
 	size_t Lenght(const char* x) {
+
 		size_t i{ 0 };
 		while (x[i] != ('\0'))
 		{
@@ -75,7 +76,6 @@ public:
 		}
 		return *this;
 	}
-
 	BigInt& operator-= (BigInt x) {
 		if (negative == false && x.negative == true)return *this += x;
 		if (negative == true && x.negative == false)return *this += x;
@@ -132,6 +132,7 @@ BigInt::BigInt(const char* x, size_t size) :capacity(size) {
 BigInt::BigInt(const BigInt& x) {	//копирование
 	delete[] number;
 	size = x.size;
+	negative = x.negative;
 	if (x.capacity > capacity)capacity = x.capacity;
 	number = new int[capacity];
 	for (size_t i = 0; i < capacity - size; ++i) {
@@ -146,6 +147,7 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 BigInt& BigInt::operator=(BigInt x) {	//присваивание
 	if (capacity > x.capacity) {
 		size = x.size;
+		negative = x.negative;
 		for (size_t i = 0; i < capacity - size; ++i) {
 			number[i] = 0;
 		}
@@ -163,6 +165,12 @@ BigInt& BigInt::operator=(BigInt x) {	//присваивание
 BigInt operator+(const BigInt& x, const BigInt& y) {
 	BigInt sum = x;
 	sum += y;
+	return sum;
+}
+
+BigInt operator-(const BigInt& x, const BigInt& y) {
+	BigInt sum = x;
+	sum -= y;
 	return sum;
 }
 
@@ -210,9 +218,9 @@ void BigInt::printNumber() {
 
 int main()
 {
-	BigInt bg1 = "7000";
-	BigInt bg2 = "998";
-	bg1 -= bg2;
+	BigInt bg1 = "00700";
+	BigInt bg2 = "00998";
+	bg1 = "1000" - bg2;
 	bg1.printNumber();
 
 
