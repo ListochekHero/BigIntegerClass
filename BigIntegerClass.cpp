@@ -2,24 +2,54 @@
 
 class BigInt {
 	bool negative{ false };
-	size_t size{ 0 };
 	size_t capacity{ 0 };
+	size_t size{ 0 };
 	int* number{ nullptr };
 
 	void swap(BigInt& x) {
-		std::swap(number, x.number);
+		std::swap(negative, x.negative);
 		std::swap(size, x.size);
 		std::swap(capacity, x.capacity);
-		std::swap(negative, x.negative);
+		std::swap(number, x.number);
 	}
 
-	size_t Lenght(const char* x) {
+	void analize(const char* x) {
+		size_t i{ 0 };
+		negative= x[0] == '-' ? true : false;
+		while (x[i+negative] == ('0'))
+		{
+			++i;
+		}
+		size = i;
+		while (x[i+negative] != ('\0'))
+		{
+			++i;
+		}
+		capacity = i;
+		size = capacity - size;
+	}
 
+	bool is_negative(const char* x) {
+		return x[0] == '-' ? true : false;
+	}
+
+	size_t size_lenght(const char* x) {
+		size_t i{ 0 };
+		//size_t j{ 0 };
+		while (x[i] != ('\0'))
+		{
+			++i;
+		}
+		return i;
+	}
+
+	size_t cap_lenght(const char* x) {
 		size_t i{ 0 };
 		while (x[i] != ('\0'))
 		{
 			++i;
 		}
+		if (x[0] == '-') --i;
 		return i;
 	}
 
@@ -42,6 +72,23 @@ class BigInt {
 			number[capacity - i - 1] = old[capacity - i - 2];
 		}
 		delete[] old;
+	}
+
+	void true_nimus(const BigInt& x) {
+		for (size_t i = 0; i < x.size; ++i)
+		{
+			if (number[capacity - i - 1] - x.number[x.capacity - i - 1] < 0) {
+				number[capacity - i - 1] += 10;
+				number[capacity - i - 2]--;
+			}
+			number[capacity - i - 1] -= x.number[x.capacity - i - 1];
+			size_t count = i;
+			while (number[capacity - count - 2] < 0) {
+				number[capacity - count - 2] += 10;
+				number[capacity - count - 3]--;
+				count++;
+			}
+		}
 	}
 
 public:
@@ -103,29 +150,38 @@ public:
 
 BigInt::BigInt(const char* x)
 {
-	capacity = size = Lenght(x);
+	analize(x);
 	number = new int[capacity];
 	for (size_t i = 0; i < capacity; ++i) {
-		number[i] = x[i] - 48;
+		number[i] = x[i+negative] - 48;
 	}
 }
 
-BigInt::BigInt(const size_t& x) : negative(false), size(0), capacity(x) {
+//BigInt::BigInt(const char* x)
+//{
+//	capacity = size = Lenght(x);
+//	number = new int[capacity];
+//	for (size_t i = 0; i < capacity; ++i) {
+//		number[i] = x[i] - 48;
+//	}
+//}
+
+BigInt::BigInt(const size_t& x) : negative(false), capacity(x), size(0) {
 	number = new int[capacity];
 	for (size_t i = 0; i < capacity; ++i) {
 		number[i] = 0;
 	}
 }
 
-BigInt::BigInt(const char* x, size_t size) :capacity(size) {
-	this->size = Lenght(x);
-	if (this->size > capacity) capacity = this->size;
+BigInt::BigInt(const char* x, size_t size) {
+	analize(x);
+	if(capacity < size) capacity = size;
 	number = new int[capacity];
 	for (size_t i = 0; i < capacity - this->size; ++i) {
-		number[i] = 0;
+		*(number + i) = 0;
 	}
 	for (size_t i = capacity - this->size; i < capacity; ++i) {
-		number[i] = x[i - (capacity - this->size)] - 48;
+		number[i] = x[(i - (capacity - this->size))+negative] - 48;
 	}
 }
 
@@ -141,6 +197,8 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 	for (size_t i = 0; i < x.size; ++i) {
 		number[capacity - i - 1] = x.number[x.capacity - i - 1];
 	}
+
+
 	std::cout << "copy!\n";
 }
 
@@ -218,9 +276,9 @@ void BigInt::printNumber() {
 
 int main()
 {
-	BigInt bg1 = "00700";
-	BigInt bg2 = "00998";
-	bg1 = "1000" - bg2;
+	BigInt bg1 = "99";
+	BigInt bg2 = "-1";
+	bg1 += bg2;
 	bg1.printNumber();
 
 
