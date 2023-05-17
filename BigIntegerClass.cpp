@@ -15,42 +15,18 @@ class BigInt {
 
 	void analize(const char* x) {
 		size_t i{ 0 };
-		negative= x[0] == '-' ? true : false;
-		while (x[i+negative] == ('0'))
+		negative = x[0] == '-' ? true : false;
+		while (x[i + negative] == ('0'))
 		{
 			++i;
 		}
 		size = i;
-		while (x[i+negative] != ('\0'))
+		while (x[i + negative] != ('\0'))
 		{
 			++i;
 		}
 		capacity = i;
 		size = capacity - size;
-	}
-
-	bool is_negative(const char* x) {
-		return x[0] == '-' ? true : false;
-	}
-
-	size_t size_lenght(const char* x) {
-		size_t i{ 0 };
-		//size_t j{ 0 };
-		while (x[i] != ('\0'))
-		{
-			++i;
-		}
-		return i;
-	}
-
-	size_t cap_lenght(const char* x) {
-		size_t i{ 0 };
-		while (x[i] != ('\0'))
-		{
-			++i;
-		}
-		if (x[0] == '-') --i;
-		return i;
 	}
 
 	void reduce_by_one() {
@@ -74,18 +50,50 @@ class BigInt {
 		delete[] old;
 	}
 
-	void true_nimus(const BigInt& x) {
+	void swap_capacity(const BigInt& x) {
+		int* old = number;
+		number = new int[x.capacity];
+		for (size_t i{ 0 }; i < capacity; ++i) {
+			number[x.capacity - i - 1] = old[capacity - i - 1];
+		}
+		for (size_t i = 0; i < x.capacity - size; ++i) {
+			*(number + i) = 0;
+		}
+		capacity = x.capacity;
+		delete[] old;
+	}
+
+	void true_minus(const BigInt& x) {
 		for (size_t i = 0; i < x.size; ++i)
 		{
 			if (number[capacity - i - 1] - x.number[x.capacity - i - 1] < 0) {
 				number[capacity - i - 1] += 10;
 				number[capacity - i - 2]--;
+				size_t count = i;
+				while (number[capacity - count - 2] < 0) {
+					number[capacity - count - 2] += 10;
+					number[capacity - count - 3]--;
+					count++;
+				}
 			}
 			number[capacity - i - 1] -= x.number[x.capacity - i - 1];
-			size_t count = i;
-			while (number[capacity - count - 2] < 0) {
-				number[capacity - count - 2] += 10;
-				number[capacity - count - 3]--;
+
+		}
+	}
+
+	void true_plus(const BigInt& x) {
+		for (size_t i{ 0 }; i < x.size; ++i) {
+			number[capacity - i - 1] += x.number[x.capacity - i - 1];
+			size_t count{ i };
+			while (number[capacity - count - 1] >= 10)
+			{
+				number[capacity - count - 1] = number[capacity - count - 1] % 10;
+				if (((int)(capacity - count) - 2) < 0) {
+					increase_by_one();
+					number[capacity - count - 2] += 1;
+					break;
+				}
+				number[capacity - count - 2] += 1;
 				count++;
 			}
 		}
@@ -103,47 +111,35 @@ public:
 	friend bool operator> (const BigInt& x, const BigInt& y);
 	friend bool operator== (const BigInt& x, const BigInt& y);
 	BigInt& operator+= (BigInt x) {
-		if (x.capacity > capacity) {
+		if (x > *this) {
 			swap(x);
 		}
-		for (size_t i{ 0 }; i < x.size; ++i) {
-			number[capacity - i - 1] += x.number[x.capacity - i - 1];
-			size_t count{ i };
-			while (number[capacity - count - 1] >= 10)
-			{
-				number[capacity - count - 1] = number[capacity - count - 1] % 10;
-				if (((int)(capacity - count) - 2) < 0) {
-					increase_by_one();
-					number[capacity - count - 2] += 1;
-					return *this;
-				}
-				number[capacity - count - 2] += 1;
-				count++;
-			}
+		if (negative == x.negative) {
+			true_plus(x);
 		}
+		else {
+			true_minus(x);
+		}
+		if (x.capacity > capacity)swap_capacity(x);
 		return *this;
 	}
 	BigInt& operator-= (BigInt x) {
-		if (negative == false && x.negative == true)return *this += x;
-		if (negative == true && x.negative == false)return *this += x;
+		if (negative == false && x.negative == true) {
+			*this += x;
+			negative = false;
+			return *this;
+		}
+		else if (negative == true && x.negative == false) {
+			*this += x;
+			negative = true;
+			return *this;
+		}
 		if (x > *this) {
 			swap(x);
 			negative = !negative;
 		}
-		for (size_t i = 0; i < x.size; ++i)
-		{
-			if (number[capacity - i - 1] - x.number[x.capacity - i - 1] < 0) {
-				number[capacity - i - 1] += 10;
-				number[capacity - i - 2]--;
-			}
-			number[capacity - i - 1] -= x.number[x.capacity - i - 1];
-			size_t count = i;
-			while (number[capacity - count - 2] < 0) {
-				number[capacity - count - 2] += 10;
-				number[capacity - count - 3]--;
-				count++;
-			}
-		}
+		true_minus(x);
+		if (x.capacity > capacity)swap_capacity(x);
 		return *this;
 	}
 };
@@ -153,18 +149,9 @@ BigInt::BigInt(const char* x)
 	analize(x);
 	number = new int[capacity];
 	for (size_t i = 0; i < capacity; ++i) {
-		number[i] = x[i+negative] - 48;
+		number[i] = x[i + negative] - 48;
 	}
 }
-
-//BigInt::BigInt(const char* x)
-//{
-//	capacity = size = Lenght(x);
-//	number = new int[capacity];
-//	for (size_t i = 0; i < capacity; ++i) {
-//		number[i] = x[i] - 48;
-//	}
-//}
 
 BigInt::BigInt(const size_t& x) : negative(false), capacity(x), size(0) {
 	number = new int[capacity];
@@ -175,13 +162,13 @@ BigInt::BigInt(const size_t& x) : negative(false), capacity(x), size(0) {
 
 BigInt::BigInt(const char* x, size_t size) {
 	analize(x);
-	if(capacity < size) capacity = size;
+	if (capacity < size) capacity = size;
 	number = new int[capacity];
 	for (size_t i = 0; i < capacity - this->size; ++i) {
 		*(number + i) = 0;
 	}
 	for (size_t i = capacity - this->size; i < capacity; ++i) {
-		number[i] = x[(i - (capacity - this->size))+negative] - 48;
+		number[i] = x[(i - (capacity - this->size)) + negative] - 48;
 	}
 }
 
@@ -236,9 +223,9 @@ bool operator< (const BigInt& x, const BigInt& y) {
 	if (x.size < y.size) return true;
 	else if (x.size > y.size) return false;
 	else {
-		for (size_t i = x.capacity - x.size; i < x.capacity; ++i) {
-			if (x.number[i] > y.number[i]) return false;
-			if (x.number[i] < y.number[i]) return true;
+		for (size_t i = 0; i < x.size; ++i) {
+			if (x.number[(x.capacity - x.size) + i] > y.number[(y.capacity - y.size) + i]) return false;
+			if (x.number[(x.capacity - x.size) + i] < y.number[(y.capacity - y.size) + i]) return true;
 		}
 		return false;
 	}
@@ -276,10 +263,9 @@ void BigInt::printNumber() {
 
 int main()
 {
-	BigInt bg1 = "99";
-	BigInt bg2 = "-1";
+	BigInt bg1 = "001";
+	BigInt bg2 = "0007";
 	bg1 += bg2;
 	bg1.printNumber();
-
 
 }
