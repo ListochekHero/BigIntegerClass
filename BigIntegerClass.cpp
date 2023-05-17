@@ -190,19 +190,8 @@ BigInt::BigInt(const BigInt& x) {	//копирование
 }
 
 BigInt& BigInt::operator=(BigInt x) {	//присваивание
-	if (capacity > x.capacity) {
-		size = x.size;
-		negative = x.negative;
-		for (size_t i = 0; i < capacity - size; ++i) {
-			number[i] = 0;
-		}
-		for (size_t i = 0; i <= x.size; ++i) {
-			number[capacity - i] = x.number[x.capacity - i];
-		}
-	}
-	else {
-		swap(x);
-	}
+	swap(x);
+	if (x.capacity > capacity)swap_capacity(x);
 	std::cout << "ravno!\n";
 	return *this;
 }
@@ -265,7 +254,7 @@ int main()
 {
 	BigInt bg1 = "001";
 	BigInt bg2 = "0007";
-	bg1 += bg2;
+	bg1 -= bg2;
 	bg1.printNumber();
 
 }
