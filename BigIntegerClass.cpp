@@ -6,7 +6,6 @@ class BigInt {
 	size_t size{ 0 };
 	int* number{ nullptr };
 
-
 	void swap(BigInt& x) {
 		std::swap(negative, x.negative);
 		std::swap(size, x.size);
@@ -100,6 +99,18 @@ class BigInt {
 		}
 	}
 
+	bool abs_less_compare(const BigInt& y) {
+		if (size < y.size) return true;
+		else if (size > y.size) return false;
+		else {
+			for (size_t i = 0; i < size; ++i) {
+				if (number[(capacity - size) + i] > y.number[(y.capacity - y.size) + i]) return false;
+				if (number[(capacity - size) + i] < y.number[(y.capacity - y.size) + i]) return true;
+			}
+			return false;
+		}
+	}
+
 public:
 	BigInt() = default;
 	BigInt(const char* x);
@@ -109,12 +120,10 @@ public:
 	~BigInt();
 	BigInt& operator=(BigInt x);
 	void printNumber();
-	friend bool operator< (const BigInt& x, const BigInt& y);
-	friend bool operator> (const BigInt& x, const BigInt& y);
-	friend bool operator== (const BigInt& x, const BigInt& y);
+	BigInt abs();
 	BigInt operator-();
 	BigInt& operator+= (BigInt x) {
-		if (x > *this) {
+		if (abs_less_compare(x)) {
 			swap(x);
 		}
 		if (negative == x.negative) {
@@ -127,7 +136,7 @@ public:
 		return *this;
 	}
 	BigInt& operator-= (BigInt x) {
-		if (x > *this) {
+		if (abs_less_compare(x)) {
 			swap(x);
 			std::swap(negative, x.negative);
 		}
@@ -140,6 +149,9 @@ public:
 		if (x.capacity > capacity)swap_capacity(x);
 		return *this;
 	}
+	friend bool operator< (const BigInt& x, const BigInt& y);
+	friend bool operator> (const BigInt& x, const BigInt& y);
+	friend bool operator== (const BigInt& x, const BigInt& y);
 };
 
 BigInt::BigInt(const char* x)
@@ -198,6 +210,12 @@ BigInt::~BigInt() {
 	delete[]number;
 };
 
+BigInt BigInt::abs() {
+	BigInt temp{ *this };
+	temp.negative = false;
+	return temp;
+}
+
 BigInt operator+(const BigInt& x, const BigInt& y) {
 	BigInt sum = x;
 	sum += y;
@@ -211,6 +229,7 @@ BigInt operator-(const BigInt& x, const BigInt& y) {
 }
 
 bool operator< (const BigInt& x, const BigInt& y) {
+	if (x.negative !=y.negative)return x.negative;
 	if (x.size < y.size) return true;
 	else if (x.size > y.size) return false;
 	else {
