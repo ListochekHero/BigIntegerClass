@@ -6,6 +6,7 @@ class BigInt {
 	size_t size{ 0 };
 	int* number{ nullptr };
 
+
 	void swap(BigInt& x) {
 		std::swap(negative, x.negative);
 		std::swap(size, x.size);
@@ -105,11 +106,13 @@ public:
 	BigInt(const size_t& x);
 	BigInt(const char* x, size_t size);
 	BigInt(const BigInt& x);
+	~BigInt();
 	BigInt& operator=(BigInt x);
 	void printNumber();
 	friend bool operator< (const BigInt& x, const BigInt& y);
 	friend bool operator> (const BigInt& x, const BigInt& y);
 	friend bool operator== (const BigInt& x, const BigInt& y);
+	BigInt operator-();
 	BigInt& operator+= (BigInt x) {
 		if (x > *this) {
 			swap(x);
@@ -124,21 +127,16 @@ public:
 		return *this;
 	}
 	BigInt& operator-= (BigInt x) {
-		if (negative == false && x.negative == true) {
-			*this += x;
-			negative = false;
-			return *this;
-		}
-		else if (negative == true && x.negative == false) {
-			*this += x;
-			negative = true;
-			return *this;
-		}
 		if (x > *this) {
 			swap(x);
-			negative = !negative;
+			std::swap(negative, x.negative);
 		}
-		true_minus(x);
+		if (negative != x.negative) {
+			true_plus(x);
+		}
+		else {
+			true_minus(x);
+		}
 		if (x.capacity > capacity)swap_capacity(x);
 		return *this;
 	}
@@ -196,6 +194,10 @@ BigInt& BigInt::operator=(BigInt x) {	//присваивание
 	return *this;
 }
 
+BigInt::~BigInt() {
+	delete[]number;
+};
+
 BigInt operator+(const BigInt& x, const BigInt& y) {
 	BigInt sum = x;
 	sum += y;
@@ -234,6 +236,13 @@ bool operator== (const BigInt& x, const BigInt& y) {
 	else return false;
 }
 
+BigInt BigInt::operator-()
+{
+	BigInt opposite{ *this };
+	opposite.negative = !negative;
+	return opposite;
+}
+
 bool operator<= (const BigInt& x, const BigInt& y) {
 	return (x < y) || (x == y);
 }
@@ -252,8 +261,8 @@ void BigInt::printNumber() {
 
 int main()
 {
-	BigInt bg1 = "001";
-	BigInt bg2 = "0007";
+	BigInt bg1 = "100814564864357468514354";
+	BigInt bg2 = "-0045678678445645070";
 	bg1 -= bg2;
 	bg1.printNumber();
 
